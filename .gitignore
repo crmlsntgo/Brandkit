@@ -1,0 +1,19 @@
+# Agent guidance (not for public repo)
+AGENTS.md
+HANDOFF.md
+implementation_plan.md
+
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# Environment secrets
+.env.local
+
+# Dev artifacts
+dev_err*.txt
+dev_out*.txt
