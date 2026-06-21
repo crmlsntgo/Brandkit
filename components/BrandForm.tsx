@@ -22,6 +22,7 @@ export default function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
   const [inspiration, setInspiration] = useState('');
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -40,14 +41,69 @@ export default function BrandForm({ onSubmit, isLoading }: BrandFormProps) {
           {touched.businessName && !businessName.trim() && <p className="mt-1 text-sm text-red-500">Required</p>}
         </div>
 
-        <div>
+        <div className="relative">
           <label htmlFor="industry" className="mb-1.5 block text-sm font-medium text-text">
             Industry <span className="text-primary">*</span>
           </label>
-          <input id="industry" type="text" required value={industry} onChange={(e) => setIndustry(e.target.value)} onBlur={() => { setTouched((p) => ({ ...p, industry: true })); setFocusedField(null); }} onFocus={() => setFocusedField('industry')} list="industries" placeholder="e.g. Technology" className="w-full rounded-xl border border-border bg-transparent px-4 py-3 text-base text-text placeholder:text-text-muted/70 transition-shadow focus:shadow-glow focus:border-primary focus:outline-none" />
-          <datalist id="industries">
-            {INDUSTRIES.map((ind) => <option key={ind} value={ind} />)}
-          </datalist>
+          <div className="relative">
+            <input
+              id="industry"
+              type="text"
+              required
+              value={industry}
+              onChange={(e) => {
+                setIndustry(e.target.value);
+                setShowDropdown(true);
+              }}
+              onBlur={() => {
+                setTouched((p) => ({ ...p, industry: true }));
+                setFocusedField(null);
+                setTimeout(() => setShowDropdown(false), 200);
+              }}
+              onFocus={() => {
+                setFocusedField('industry');
+                setShowDropdown(true);
+              }}
+              placeholder="e.g. Technology"
+              className="w-full rounded-xl border border-border bg-transparent pr-10 pl-4 py-3 text-base text-text placeholder:text-text-muted/70 transition-shadow focus:shadow-glow focus:border-primary focus:outline-none"
+            />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowDropdown((p) => !p)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text focus:outline-none"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                className={`transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`}
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+          </div>
+
+          {showDropdown && (
+            <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-border bg-surface py-1 shadow-elevated focus:outline-none text-sm text-text">
+              {INDUSTRIES.map((ind) => (
+                <li
+                  key={ind}
+                  onMouseDown={() => {
+                    setIndustry(ind);
+                    setShowDropdown(false);
+                  }}
+                  className="cursor-pointer select-none px-4 py-2 hover:bg-primary/10 hover:text-primary transition-colors"
+                >
+                  {ind}
+                </li>
+              ))}
+            </ul>
+          )}
           {touched.industry && !industry.trim() && <p className="mt-1 text-sm text-red-500">Required</p>}
         </div>
       </div>
